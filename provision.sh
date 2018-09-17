@@ -15,25 +15,25 @@ pacman -S --noconfirm base-devel sudo wget git
 sed -i -e 's/#Port 22/Port 22/g' /etc/ssh/sshd_config
 sed -i -e 's/#AddressFamily any/AddressFamily any/g' /etc/ssh/sshd_config
 sed -i -e 's/#ListenAddress 0.0.0.0/ListenAddress 0.0.0.0/g' /etc/ssh/sshd_config
-sed -i -e 's/#ListenAddress 0.0.0.0/ListenAddress 0.0.0.0/g' /etc/ssh/sshd_config
-sed -i -e 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-sed -i -e 's/#PermitRootLogin/PermitRootLogin/g' /etc/sudoers
-echo 'alarm ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo
+echo 'build ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo
 
 #Criando Usuario Padrão
-useradd -m -g users -G wheel -s /bin/bash chromium
+useradd -m -g users -G wheel -s /bin/bash build
+#Como setar uma senha ou chave para acesso
 
-# Delegando permissões para o usuário chromium
+# Delegando permissões para o usuário build
 sed -i -e 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers
+sed -i -e 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudores
+
 
 # Instalando o X Server
-pacman -S --noconfirm xorg-server xorg-xinit xorg-xrandr xf86-video-fbdev xorg-twm xorg-clock xterm
+pacman -S --noconfirm xorg-server xorg-xinit xorg-xrandr xf86-video-fbdev xorg-twm xterm
 
 # Instalando o Docker Engine
 pacman -S --noconfirm docker
 
-# Instalando o Chromium
-pacman -S --noconfirm chromium unclutter xdotool
+# Instalando o xdotool e unclutter
+pacman -S --noconfirm unclutter xdotool
 
 # Desabilitando root login
 passwd -l root
@@ -42,6 +42,14 @@ passwd -l root
 #sudo userdel alarm
 
 # Configurando o auto loging
+#mkdir -p /etc/systemd/system/foobar.service.d
+#cat > /etc/systemd/system/foobar.service.d/10-my-edits.conf <<EOF
+#[Service]
+#ExecStart=
+#ExecStart=foo
+#EOF
+
+
 #systemctl start getty@tty1.service
 #systemctl edit getty@tty1
 
