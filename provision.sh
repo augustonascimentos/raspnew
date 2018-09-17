@@ -18,13 +18,11 @@ sed -i -e 's/#ListenAddress 0.0.0.0/ListenAddress 0.0.0.0/g' /etc/ssh/sshd_confi
 echo 'build ALL=(ALL) ALL' | sudo EDITOR='tee -a' visudo
 
 #Criando Usuario Padrão
-useradd -m -g users -G wheel -s /bin/bash build
-#Como setar uma senha ou chave para acesso
+useradd -m -p '$6$YMLKRK7dqt0KJ8T8$EKmvtTTIlMGLDLLeg954kBMHMPmEM0CweaxX.HdLIcTztbrh48qoLj5qF3Gj4C4MrkPumkjJrUtewf0ArUdbP/' -g users -G wheel -s /bin/bash build
 
 # Delegando permissões para o usuário build
 sed -i -e 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers
 sed -i -e 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudores
-
 
 # Instalando o X Server
 pacman -S --noconfirm xorg-server xorg-xinit xorg-xrandr xf86-video-fbdev xorg-twm xterm
@@ -39,24 +37,24 @@ pacman -S --noconfirm unclutter xdotool
 passwd -l root
 
 # Desabilitando os usuario padrão(alarm) do Raspberry 
-#sudo userdel alarm
+sudo userdel alarm
 
 # Configurando o auto loging
-#mkdir -p /etc/systemd/system/foobar.service.d
-#cat > /etc/systemd/system/foobar.service.d/10-my-edits.conf <<EOF
-#[Service]
-#ExecStart=
-#ExecStart=foo
-#EOF
+systemctl start getty@tty1.service
+mkdir -p /etc/systemd/system/getty\@tty1.service.d/
+cat > /etc/systemd/system/getty\@tty1.service.d/override.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=-/usr/bin/agetty --autologin build --noclear %I $TERM
+EOF
 
+# Configurando Hostname
+ip=$(ip add | grep 10.10 | awk '{print $2}' |  cut -f1 -d"/" | cut -f4 -d".")
+echo raspberry-"$ip" > /etc/hostname
 
-#systemctl start getty@tty1.service
-#systemctl edit getty@tty1
-
-#[Service]
-#ExecStart=
-#ExecStart=-/usr/bin/agetty --autologin build --noclear %I $TERM
-
+# Iniciando o serviço Docker
+systemctl enable docker.service
+systemctl start docker.service
 
 # Resetando o sistema para carregar todas a configuracoes
 reboot
