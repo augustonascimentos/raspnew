@@ -30,7 +30,8 @@ w
 
 #Formatando as partições
 mkfs.vfat /dev/mmcblk0p1
-mkfs.ext4 /dev/mmcblk0p2
+echo "y
+" | mkfs.ext4 /dev/mmcblk0p2
 
 #Criando diretórios boot e root
 mkdir -p boot root
@@ -49,5 +50,5 @@ bsdtar -xvpf ArchLinuxARM-rpi-2-latest.tar.gz -C root
 mv root/boot/* boot
 
 #Desmontando root e boot
-umount root boot
+umount -f root boot
 rm -rf boot root
